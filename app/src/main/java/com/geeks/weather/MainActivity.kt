@@ -6,8 +6,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
 import com.geeks.weather.databinding.ActivityMainBinding
+import com.geeks.weather.db.WeatherDao
+import com.geeks.weather.db.WeatherDatabase
+import com.geeks.weather.db.WeatherEntity
 import com.geeks.weather.model.WeatherModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,16 +24,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val list = mutableListOf<WeatherModel>()
     private lateinit var adapter: WeatherAdapter
+    private lateinit var weatherDao: WeatherDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Инициализация базы данных и DAO Room
+        val db = Room.databaseBuilder(applicationContext, WeatherDatabase::class.java, "weather-database").build()
+        weatherDao = db.weatherDao()
+
         adapter = WeatherAdapter(list)
         binding.rvWeather.adapter = adapter
 
         initClickers()
+        loadSavedCities()
     }
 
     private fun initClickers() {
@@ -36,12 +49,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CREATE_ACTIVITY && resultCode == Activity.RESULT_OK) {
             data?.getStringExtra("city")?.let { city ->
+                saveCity(city)
                 loadData(city)
+            }
+        }
+    }
+
+    private fun saveCity(cityName: String) {
+        val cityEntity = WeatherEntity(cityName = cityName,temperature = 0.0)
+        GlobalScope.launch(Dispatchers.IO) {
+            weatherDao.insertWeather(cityEntity)
+        }
+    }
+    private fun loadSavedCities() {
+        GlobalScope.launch(Dispatchers.IO) {
+            val savedCities = weatherDao.getAllWeather()
+            savedCities.forEach { city ->
+                loadData(city.cityName)
             }
         }
     }
@@ -58,13 +86,13 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     else -> {
-                        showToast("Error: ${response.code()} - ${response.message()}")
+                        showToast("Ошибка: ${response.code()} - ${response.message()}")
                     }
                 }
             }
 
             override fun onFailure(call: Call<WeatherModel>, t: Throwable) {
-                showToast("Error: ${t.localizedMessage}")
+                showToast("Ошибка: ${t.localizedMessage}")
             }
         })
     }
@@ -73,7 +101,6 @@ class MainActivity : AppCompatActivity() {
         val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT)
         toast.show()
     }
-
 
     companion object {
         private const val CREATE_ACTIVITY = 1
