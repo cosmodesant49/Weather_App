@@ -1,5 +1,6 @@
 package com.geeks.weather.model
 
+import androidx.room.Entity
 
 data class WeatherModel(
     var main: MainModel,

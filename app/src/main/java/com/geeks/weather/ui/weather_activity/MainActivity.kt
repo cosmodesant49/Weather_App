@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
@@ -12,10 +13,12 @@ import com.geeks.weather.ui.create_activity.CreateActivity
 import com.geeks.weather.retrofit.RetrofitService
 import com.geeks.weather.ui.adapter.WeatherAdapter
 import com.geeks.weather.databinding.ActivityMainBinding
+import com.geeks.weather.db.App
 import com.geeks.weather.db.WeatherDao
 import com.geeks.weather.db.WeatherDatabase
 import com.geeks.weather.db.WeatherEntity
 import com.geeks.weather.model.WeatherModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,9 +29,9 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val list = mutableListOf<WeatherModel>()
-    private val adapter = WeatherAdapter(list) { weatherModel ->
-        onLongClickItem(weatherModel)
+    private val list = mutableListOf<WeatherEntity>()
+    private val adapter = WeatherAdapter(list) { weatherModel, position ->
+        onLongClickItem(weatherModel, position)
     }
 
     private lateinit var weatherDao: WeatherDao
@@ -38,85 +41,74 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val db = Room.databaseBuilder(applicationContext, WeatherDatabase::class.java, "weather-database").build()
-        weatherDao = db.weatherDao()
+        val db = Room.databaseBuilder(
+            applicationContext,
+            WeatherDatabase::class.java,
+            "weather-database"
+        ).build()
 
-/*        adapter = WeatherAdapter(list) { weatherModel ->
-            showAlertDialog(weatherModel)
-        }*/
         binding.rvWeather.adapter = adapter
 
         initClickers()
-        loadSavedCities()
+        CoroutineScope(Dispatchers.IO).launch {
+            val savedCities = App.db.weatherDao().getAllWeather()
+            list.clear()
+            list.addAll(savedCities)
+            Log.e("ololo", "createActivity: $savedCities")
+        }
+        adapter.notifyDataSetChanged()
     }
 
 
     private fun initClickers() {
         binding.ivAddCity.setOnClickListener {
+            Log.e("ololo", "initClickers in main: ", )
             val intent = Intent(this, CreateActivity::class.java)
             startActivityForResult(intent, CREATE_ACTIVITY)
         }
     }
-    private fun onLongClickItem(weatherModel: WeatherModel) {
-        showAlertDialog(weatherModel)
+
+    private fun onLongClickItem(weatherModel: WeatherEntity, position: Int) {
+        showAlertDialog(weatherModel, position)
     }
 
 
-    private fun showAlertDialog(weatherModel: WeatherModel) {
+    private fun showAlertDialog(weatherModel: WeatherEntity, position: Int) {
         val alertDialog = AlertDialog.Builder(this)
-        alertDialog.setTitle(weatherModel.name)
+        alertDialog.setTitle(weatherModel.cityName)
             .setMessage("Are you sure you want to delete this city?")
             .setCancelable(true)
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
             }
             .setPositiveButton("Yes") { _, _ ->
-                deleteCity(weatherModel)
+                CoroutineScope(Dispatchers.IO).launch{
+                    Log.e("ololo", "showAlertDialog: $weatherModel", )
+                    App.db.weatherDao().deleteWeather(weatherModel)
+                    list.clear()
+                    list.addAll(App.db.weatherDao().getAllWeather())
+                }
+                adapter.notifyDataSetChanged()
             }
-
             .show()
     }
-
-    private fun deleteCity(weatherModel: WeatherModel) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val cityName = weatherModel.name
-            val cityEntity = weatherDao.getAllWeather().find { it.cityName == cityName }
-            cityEntity?.let {
-                weatherDao.deleteAllWeather(cityEntity)
-                loadSavedCities()
-            }
-        }
-    }
-
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CREATE_ACTIVITY && resultCode == Activity.RESULT_OK) {
             data?.getStringExtra("city")?.let { city ->
-                saveCity(city)
+                Log.e("ololo", "createActivity: $city")
                 loadData(city)
             }
         }
     }
 
     private fun saveCity(cityName: String) {
-        val cityEntity = WeatherEntity(cityName = cityName,temperature = 0.0)
-        GlobalScope.launch(Dispatchers.IO) {
+        val cityEntity = WeatherEntity(cityName = cityName, temperature = 0.0)
+        CoroutineScope(Dispatchers.IO).launch {
             weatherDao.insertWeather(cityEntity)
         }
     }
-
-    private fun loadSavedCities() {
-        GlobalScope.launch(Dispatchers.IO) {
-            val savedCities = weatherDao.getAllWeather()
-            savedCities.forEach { city ->
-                loadData(city.cityName)
-            }
-        }
-    }
-
-
 
 
     private fun loadData(city: String) {
@@ -126,10 +118,22 @@ class MainActivity : AppCompatActivity() {
                 when {
                     response.isSuccessful -> {
                         response.body()?.let {
-                            list.add(it)
-                            adapter.notifyDataSetChanged()
+                            val weatherEntity =
+                                WeatherEntity(cityName = it.name, temperature = it.main.temp)
+                            CoroutineScope(Dispatchers.IO).launch {
+                            App.db.weatherDao().insertWeather(weatherEntity)
+                            }
+                            Log.e("ololo", "weather entity: $weatherEntity")
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val savedCities = App.db.weatherDao().getAllWeather()
+                                list.clear()
+                                list.addAll(savedCities)
+                                Log.e("ololo", "list: $savedCities")
+                                runOnUiThread { adapter.notifyDataSetChanged() }
+                            }
                         }
                     }
+
                     else -> {
                         showToast("Error: ${response.code()} - ${response.message()}")
                     }

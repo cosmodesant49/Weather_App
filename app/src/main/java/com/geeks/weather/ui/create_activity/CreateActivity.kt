@@ -3,6 +3,7 @@ package com.geeks.weather.ui.create_activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.geeks.weather.databinding.ActivityCreateBinding
 
@@ -24,7 +25,7 @@ class CreateActivity : AppCompatActivity() {
             val intent = Intent().putExtra("city", cityName)
             setResult(Activity.RESULT_OK, intent)
             finish()
-
+            Log.e("ololo", "createActivity: $cityName", )
         }
     }
 }
