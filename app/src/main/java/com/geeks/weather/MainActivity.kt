@@ -2,6 +2,7 @@ package com.geeks.weather
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -23,7 +24,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val list = mutableListOf<WeatherModel>()
-    private lateinit var adapter: WeatherAdapter
+    private val adapter = WeatherAdapter(list) { weatherModel ->
+        onLongClickItem(weatherModel)
+    }
+
     private lateinit var weatherDao: WeatherDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,16 +35,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Инициализация базы данных и DAO Room
         val db = Room.databaseBuilder(applicationContext, WeatherDatabase::class.java, "weather-database").build()
         weatherDao = db.weatherDao()
 
-        adapter = WeatherAdapter(list)
+/*        adapter = WeatherAdapter(list) { weatherModel ->
+            showAlertDialog(weatherModel)
+        }*/
         binding.rvWeather.adapter = adapter
 
         initClickers()
         loadSavedCities()
     }
+
 
     private fun initClickers() {
         binding.ivAddCity.setOnClickListener {
@@ -48,6 +54,38 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intent, CREATE_ACTIVITY)
         }
     }
+    private fun onLongClickItem(weatherModel: WeatherModel) {
+        showAlertDialog(weatherModel)
+    }
+
+
+    private fun showAlertDialog(weatherModel: WeatherModel) {
+        val alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle(weatherModel.name)
+            .setMessage("Are you sure you want to delete this city?")
+            .setCancelable(true)
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("Yes") { _, _ ->
+                deleteCity(weatherModel)
+            }
+
+            .show()
+    }
+
+    private fun deleteCity(weatherModel: WeatherModel) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val cityName = weatherModel.name
+            val cityEntity = weatherDao.getAllWeather().find { it.cityName == cityName }
+            cityEntity?.let {
+                weatherDao.deleteAllWeather(cityEntity)
+                loadSavedCities()
+            }
+        }
+    }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -65,6 +103,7 @@ class MainActivity : AppCompatActivity() {
             weatherDao.insertWeather(cityEntity)
         }
     }
+
     private fun loadSavedCities() {
         GlobalScope.launch(Dispatchers.IO) {
             val savedCities = weatherDao.getAllWeather()
@@ -73,6 +112,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
+
 
     private fun loadData(city: String) {
         RetrofitService().api.getWeather(city).enqueue(object : Callback<WeatherModel> {
@@ -86,13 +128,13 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     else -> {
-                        showToast("Ошибка: ${response.code()} - ${response.message()}")
+                        showToast("Error: ${response.code()} - ${response.message()}")
                     }
                 }
             }
 
             override fun onFailure(call: Call<WeatherModel>, t: Throwable) {
-                showToast("Ошибка: ${t.localizedMessage}")
+                showToast("Error: ${t.localizedMessage}")
             }
         })
     }

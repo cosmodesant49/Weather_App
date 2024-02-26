@@ -1,6 +1,5 @@
 package com.geeks.weather
 
-
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,8 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.geeks.weather.databinding.ItemCityBinding
 import com.geeks.weather.model.WeatherModel
 
-class WeatherAdapter(private val list: List<WeatherModel>) :
-    RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
+class WeatherAdapter(
+    private val list: MutableList<WeatherModel>,
+    private val onLongClickItem: (weather: WeatherModel) -> Unit
+) : RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemCityBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -23,12 +24,15 @@ class WeatherAdapter(private val list: List<WeatherModel>) :
         holder.bind(city)
     }
 
-    class ViewHolder(private val binding: ItemCityBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemCityBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
-        fun bind(weatherModel: WeatherModel,) {
-                with(binding) {
-                    tvCity.text = weatherModel.name
-                    tvTemp.text = "${weatherModel.main.temp.toInt()}°"
+        fun bind(weatherModel: WeatherModel) {
+            with(binding) {
+                tvCity.text = weatherModel.name
+                tvTemp.text = "${weatherModel.main.temp.toInt()}°"
+                itemView.setOnClickListener {
+                    onLongClickItem(list[adapterPosition])
+                }
             }
         }
     }
