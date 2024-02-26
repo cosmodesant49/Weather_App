@@ -1,4 +1,4 @@
-package com.geeks.weather
+package com.geeks.weather.ui.create_activity
 
 import android.app.Activity
 import android.content.Intent

@@ -1,4 +1,4 @@
-package com.geeks.weather
+package com.geeks.weather.ui.weather_activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
+import com.geeks.weather.ui.create_activity.CreateActivity
+import com.geeks.weather.retrofit.RetrofitService
+import com.geeks.weather.ui.adapter.WeatherAdapter
 import com.geeks.weather.databinding.ActivityMainBinding
 import com.geeks.weather.db.WeatherDao
 import com.geeks.weather.db.WeatherDatabase
