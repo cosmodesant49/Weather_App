@@ -8,5 +8,4 @@ data class WeatherEntity(
     val id: Long = 0,
     val cityName: String,
     val temperature: Double,
-    //val weatherDescription: String
 )

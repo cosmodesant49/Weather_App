@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginHorizontal="8dp"
-            android:text="Regional Weather"
+            android:text="@string/regional_weather"
             android:textColor="@color/white"
             android:textSize="64px"
             android:textStyle="bold"

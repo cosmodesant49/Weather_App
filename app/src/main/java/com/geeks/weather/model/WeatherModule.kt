@@ -4,19 +4,19 @@ import androidx.room.Entity
 
 data class WeatherModel(
     var main: MainModel,
-    var wind: WindModel,
+/*    var wind: WindModel,
     var clouds: CloudsModel,
-    var sys: SysModel,
+    var sys: SysModel,*/
     var name: String,
 
 )
 data class MainModel(
     var temp: Double,
-    var feels_like: Double,
+/*    var feels_like: Double,
     var temp_min: Double,
-    var temp_max: Double,
+    var temp_max: Double,*/
 )
-class WindModel(
+/*class WindModel(
     var speed: Double
 )
 data class CloudsModel(
@@ -24,5 +24,5 @@ data class CloudsModel(
 )
 data class SysModel(
     var country: String
-)
+)*/
 

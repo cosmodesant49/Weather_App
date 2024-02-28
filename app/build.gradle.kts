@@ -72,5 +72,15 @@ dependencies {
     //room
     implementation ("androidx.room:room-runtime:2.4.0")
     kapt ("androidx.room:room-compiler:2.4.0")
+    //tests
+    testImplementation ("org.mockito:mockito-core:3.11.2")
+    testImplementation ("org.mockito:mockito-inline:3.11.2")
+    testImplementation ("org.robolectric:robolectric:4.5.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
+
+
+
+
+
 
 }

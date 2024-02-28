@@ -28,13 +28,14 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var retrofitService: RetrofitService
     private lateinit var binding: ActivityMainBinding
-    private val list = mutableListOf<WeatherEntity>()
+    val list = mutableListOf<WeatherEntity>()
     private val adapter = WeatherAdapter(list) { weatherModel, position ->
         onLongClickItem(weatherModel, position)
     }
 
-    private lateinit var weatherDao: WeatherDao
+    lateinit var weatherDao: WeatherDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +56,11 @@ class MainActivity : AppCompatActivity() {
             list.clear()
             list.addAll(savedCities)
             Log.e("ololo", "createActivity: $savedCities")
+            runOnUiThread {
+                adapter.notifyDataSetChanged()
+            }
         }
-        adapter.notifyDataSetChanged()
+
     }
 
 
@@ -81,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("Yes") { _, _ ->
+            .setPositiveButton("Delete") { _, _ ->
                 CoroutineScope(Dispatchers.IO).launch{
                     Log.e("ololo", "showAlertDialog: $weatherModel", )
                     App.db.weatherDao().deleteWeather(weatherModel)
@@ -111,7 +115,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun loadData(city: String) {
+    fun loadData(city: String) {
         RetrofitService().api.getWeather(city).enqueue(object : Callback<WeatherModel> {
             @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<WeatherModel>, response: Response<WeatherModel>) {

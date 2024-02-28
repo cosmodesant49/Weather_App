@@ -11,4 +11,7 @@
     <string name="clouds">Clouds:</string>
     <string name="country">Country:</string>
     <string name="wind_speed">Wind speed:</string>
+    <string name="regional_weather">Regional Weather</string>
+    <string name="search_for_city">Search for City</string>
+    <string name="search_for_a_city">Search for a city...</string>
 </resources>
