@@ -11,13 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.geeks.weather.ui.create_activity.CreateActivity
 import com.geeks.weather.retrofit.RetrofitService
-import com.geeks.weather.ui.weather_activity.adapter.WeatherAdapter
 import com.geeks.weather.databinding.ActivityMainBinding
 import com.geeks.weather.db.App
 import com.geeks.weather.db.WeatherDao
 import com.geeks.weather.db.WeatherDatabase
 import com.geeks.weather.db.WeatherEntity
 import com.geeks.weather.model.WeatherModel
+import com.geeks.weather.ui.weather_activity.adapter.WeatherAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -116,7 +116,6 @@ class WeatherActivity : AppCompatActivity() {
 
     fun loadData(city: String) {
         RetrofitService().api.getWeather(city).enqueue(object : Callback<WeatherModel> {
-            @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<WeatherModel>, response: Response<WeatherModel>) {
                 when {
                     response.isSuccessful -> {
@@ -124,19 +123,11 @@ class WeatherActivity : AppCompatActivity() {
                             val weatherEntity =
                                 WeatherEntity(cityName = it.name, temperature = it.main.temp)
                             CoroutineScope(Dispatchers.IO).launch {
-                            App.db.weatherDao().insertWeather(weatherEntity)
-                            }
-                            Log.e("ololo", "weather entity: $weatherEntity")
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val savedCities = App.db.weatherDao().getAllWeather()
-                                list.clear()
-                                list.addAll(savedCities)
-                                Log.e("ololo", "list: $savedCities")
-                                runOnUiThread { adapter.notifyDataSetChanged() }
+                                App.db.weatherDao().insertWeather(weatherEntity)
+                                updateWeatherList()
                             }
                         }
                     }
-
                     else -> {
                         showToast("Error: ${response.code()} - ${response.message()}")
                     }
@@ -147,6 +138,17 @@ class WeatherActivity : AppCompatActivity() {
                 showToast("Error: ${t.localizedMessage}")
             }
         })
+    }
+
+    private fun updateWeatherList() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val savedCities = App.db.weatherDao().getAllWeather()
+            list.clear()
+            list.addAll(savedCities)
+            runOnUiThread {
+                adapter.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun showToast(message: String) {
