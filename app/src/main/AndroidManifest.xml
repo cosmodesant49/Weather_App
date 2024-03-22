@@ -19,7 +19,7 @@
             android:name=".ui.create_activity.CreateActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.weather_activity.MainActivity"
+            android:name=".ui.weather_activity.WeatherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.geeks.weather.ui.create_activity.CreateActivity
 import com.geeks.weather.retrofit.RetrofitService
-import com.geeks.weather.ui.adapter.WeatherAdapter
+import com.geeks.weather.ui.weather_activity.adapter.WeatherAdapter
 import com.geeks.weather.databinding.ActivityMainBinding
 import com.geeks.weather.db.App
 import com.geeks.weather.db.WeatherDao
@@ -20,13 +20,12 @@ import com.geeks.weather.db.WeatherEntity
 import com.geeks.weather.model.WeatherModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : AppCompatActivity() {
+class WeatherActivity : AppCompatActivity() {
 
     lateinit var retrofitService: RetrofitService
     private lateinit var binding: ActivityMainBinding
