@@ -1,9 +1,11 @@
 This is an android weather tracking app.
 
 To download it to your mobile phone, follow the link and download the apk file of the application: https://files.fm/u/b2buakp5xe
-or do it on android studio click on:
+or
+do git clone https://github.com/cosmodesant49/Weather_App, do it on android studio after it click on:
 Build -> Build Bundle(s) / APK(s) -> APK -> wait -> 
 open location where you dowoload my app
+or use emulator
 ex: C:\Users\Admin\AndroidStudioProjects\Weather2\app\debug
 and send app-debug.apk to your phone
 
