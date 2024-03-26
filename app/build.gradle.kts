@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -16,6 +17,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"https://api.openweathermap.org/\""
+        )
     }
     buildFeatures{
         viewBinding = true
@@ -77,7 +84,9 @@ dependencies {
     testImplementation ("org.mockito:mockito-inline:3.11.2")
     testImplementation ("org.robolectric:robolectric:4.5.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
-
+//Dagger Hilt
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.48.1")
 
 
 

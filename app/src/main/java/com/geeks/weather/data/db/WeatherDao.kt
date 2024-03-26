@@ -1,5 +1,6 @@
 package com.geeks.weather.data.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,7 +12,7 @@ import com.geeks.weather.data.model.WeatherModel
 interface WeatherDao {
 
     @Query("SELECT * FROM weather")
-    fun getAllWeather(): List<WeatherEntity>
+    fun getAllWeather(): LiveData<List<WeatherEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertWeather(weather: WeatherEntity)

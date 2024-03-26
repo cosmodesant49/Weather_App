@@ -16,10 +16,10 @@
         android:theme="@style/Theme.Weather"
         tools:targetApi="31">
         <activity
-            android:name=".ui.create_activity.CreateActivity"
+            android:name=".presentation.create_activity.CreateActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.weather_activity.WeatherActivity"
+            android:name=".presentation.weather_activity.WeatherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
