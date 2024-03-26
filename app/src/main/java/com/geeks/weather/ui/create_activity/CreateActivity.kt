@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.geeks.weather.databinding.ActivityCreateBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CreateActivity : AppCompatActivity() {
 
@@ -22,10 +25,16 @@ class CreateActivity : AppCompatActivity() {
     private fun initClickers() {
         binding.ivSearch.setOnClickListener {
             val cityName = binding.etCity.text.toString()
-            val intent = Intent().putExtra("city", cityName)
-            setResult(Activity.RESULT_OK, intent)
-            finish()
-            Log.e("ololo", "createActivity: $cityName", )
+            CoroutineScope(Dispatchers.Main).launch {
+                handleSearch(cityName)
+            }
         }
+    }
+
+    private suspend fun handleSearch(cityName: String) {
+        val intent = Intent().putExtra("city", cityName)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+        Log.e("ololo", "createActivity: $cityName")
     }
 }
