@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.geeks.weather.databinding.ItemCityBinding
-import com.geeks.weather.db.WeatherEntity
-import com.geeks.weather.model.WeatherModel
+import com.geeks.weather.data.db.WeatherEntity
+import com.geeks.weather.data.model.WeatherModel
 
 class WeatherAdapter(
     private val list: MutableList<WeatherEntity>,

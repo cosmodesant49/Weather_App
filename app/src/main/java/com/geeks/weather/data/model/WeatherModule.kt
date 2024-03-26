@@ -1,15 +1,15 @@
-package com.geeks.weather.model
+package com.geeks.weather.data.model
 
 import androidx.room.Entity
 
 data class WeatherModel(
     var main: MainModel,
-/*    var wind: WindModel,
-    var clouds: CloudsModel,
-    var sys: SysModel,*/
+    /*    var wind: WindModel,
+        var clouds: CloudsModel,
+        var sys: SysModel,*/
     var name: String,
 
-)
+    )
 data class MainModel(
     var temp: Double,
 /*    var feels_like: Double,

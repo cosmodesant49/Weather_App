@@ -1,11 +1,11 @@
-package com.geeks.weather.db
+package com.geeks.weather.data.db
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.geeks.weather.model.WeatherModel
+import com.geeks.weather.data.model.WeatherModel
 
 @Dao
 interface WeatherDao {

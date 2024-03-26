@@ -1,6 +1,6 @@
-package com.geeks.weather
+package com.geeks.weather.data
 
-import com.geeks.weather.model.WeatherModel
+import com.geeks.weather.data.model.WeatherModel
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

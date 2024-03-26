@@ -9,13 +9,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
-import com.geeks.weather.retrofit.RetrofitService
+import com.geeks.weather.data.retrofit.RetrofitService
 import com.geeks.weather.databinding.ActivityMainBinding
-import com.geeks.weather.db.App
-import com.geeks.weather.db.WeatherDao
-import com.geeks.weather.db.WeatherDatabase
-import com.geeks.weather.db.WeatherEntity
-import com.geeks.weather.model.WeatherModel
+import com.geeks.weather.data.db.App
+import com.geeks.weather.data.db.WeatherDao
+import com.geeks.weather.data.db.WeatherDatabase
+import com.geeks.weather.data.db.WeatherEntity
+import com.geeks.weather.data.model.WeatherModel
 import com.geeks.weather.ui.create_activity.CreateActivity
 import com.geeks.weather.ui.weather_activity.adapter.WeatherAdapter
 import kotlinx.coroutines.CoroutineScope
@@ -28,12 +28,12 @@ import retrofit2.Response
 
 class WeatherActivity : AppCompatActivity() {
 
-    private lateinit var retrofitService: RetrofitService
+    //private lateinit var retrofitService: RetrofitService
     private lateinit var binding: ActivityMainBinding
     private lateinit var weatherDao: WeatherDao
     private val list = mutableListOf<WeatherEntity>()
     private val adapter = WeatherAdapter(list) { weatherModel, position ->
-        onLongClickItem(weatherModel, position)
+        onClickItem(weatherModel, position)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +53,7 @@ class WeatherActivity : AppCompatActivity() {
 
         initClickers()
         loadSavedCities()
+        adapter.notifyDataSetChanged()
     }
 
     private fun initClickers() {
@@ -62,7 +63,7 @@ class WeatherActivity : AppCompatActivity() {
         }
     }
 
-    private fun onLongClickItem(weatherModel: WeatherEntity, position: Int) {
+    private fun onClickItem(weatherModel: WeatherEntity, position: Int) {
         showAlertDialog(weatherModel)
     }
 
@@ -92,16 +93,17 @@ class WeatherActivity : AppCompatActivity() {
         if (requestCode == CREATE_ACTIVITY && resultCode == Activity.RESULT_OK) {
             data?.getStringExtra("city")?.let { city ->
                 loadData(city)
+                adapter.notifyDataSetChanged()
             }
         }
     }
 
-    private fun saveCity(cityName: String) {
+/*    private fun saveCity(cityName: String) {
         val cityEntity = WeatherEntity(cityName = cityName, temperature = 0.0)
         CoroutineScope(Dispatchers.IO).launch {
             weatherDao.insertWeather(cityEntity)
         }
-    }
+    }*/
 
     private fun loadSavedCities() {
         CoroutineScope(Dispatchers.IO).launch {

@@ -1,6 +1,6 @@
 package com.geeks.weather
 
-import com.geeks.weather.db.WeatherEntity
+import com.geeks.weather.data.db.WeatherEntity
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -1,6 +1,6 @@
-package com.geeks.weather.retrofit
+package com.geeks.weather.data.retrofit
 
-import com.geeks.weather.WeatherApi
+import com.geeks.weather.data.WeatherApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

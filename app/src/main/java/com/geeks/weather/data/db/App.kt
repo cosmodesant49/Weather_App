@@ -1,4 +1,4 @@
-package com.geeks.weather.db
+package com.geeks.weather.data.db
 
 import android.app.Application
 import androidx.room.Room
