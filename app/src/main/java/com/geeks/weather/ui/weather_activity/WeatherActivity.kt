@@ -1,6 +1,5 @@
 package com.geeks.weather.ui.weather_activity
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
