@@ -20,17 +20,9 @@ class CreateActivityViewModel @Inject constructor(private val weatherUseCase: We
     fun getWeather(city: String): LiveData<Resource<WeatherModel>> = weatherUseCase.getWeather(city)
 
     suspend fun insertWeather(weatherEntity: WeatherEntity) = weatherUseCase.insertWeather(weatherEntity)
-}
 
-/*
-    fun searchCity(cityName: String) {
-        viewModelScope.launch {
-            delay(1000)
 
-            if (cityName.isBlank()) {
-                _searchResult.postValue(Result.failure(IllegalArgumentException("City name cannot be blank")))
-            } else {
-                _searchResult.postValue(Result.success(cityName))
-            }
-        }
-    }*/
+
+    }
+
+

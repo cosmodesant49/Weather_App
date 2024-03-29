@@ -16,18 +16,11 @@
         android:textColor="@color/white"
         android:textSize="64px"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_arrow_back"
-        app:layout_constraintStart_toEndOf="@+id/iv_arrow_back"
-        app:layout_constraintTop_toTopOf="@+id/iv_arrow_back" />
-
-    <ImageView
-        android:layout_margin="16dp"
-        android:id="@+id/iv_arrow_back"
-        android:layout_width="80px"
-        android:layout_height="80px"
-        android:background="@drawable/arrow_back"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="16dp"/>
+
+
 
 
     <com.google.android.material.textfield.TextInputLayout

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -36,40 +37,27 @@ class CreateActivity : AppCompatActivity() {
     private fun initClickers() {
         binding.ivSearch.setOnClickListener {
             val cityName = binding.etCity.text.toString().trim()
-           /* if (cityName.isNotEmpty()) {
-                viewModel.getWeather(cityName).observe(this, Observer { weather ->
-                    when (weather) {
-                        is Resource.Error -> {
-                            Log.e("ololo", "Error appeared")
-                        }
-
-                        is Resource.Loading -> {
-                            Log.e("ololo", "Loading in process: ", )
-                        }
-                        is Resource.Success -> {
-                            Log.e(
-                                "ololo",
-                                "Model:$weather, Data: ${weather.data}, Message: ${weather.message}",
-                            )
-                            weather.data?.let {
-                                val weatherEntity = WeatherEntity(
-                                    cityName = it.name,
-                                    temperature = it.main.temp
-                                )
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    Log.e("ololo", "Entity: $weatherEntity, Model: $weather")
-                                    viewModel.insertWeather(weatherEntity)
-                                }
-                            }
-                        }
+            if (cityName.isEmpty()) {
+                Toast.makeText(this, "Can not be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            viewModel.getWeather(cityName).observe(this, Observer { weather ->
+                when (weather) {
+                    is Resource.Error -> {
+                        Toast.makeText(this, "Unknown City", Toast.LENGTH_SHORT).show()
                     }
-
-                })
-            }*/
-
+                    is Resource.Loading -> {
+                        Log.d("CreateActivity", "Loading in process")
+                    }
+                    is Resource.Success -> {
+                        Log.d("CreateActivity", "Success")
+                    }
+                }
+            })
             val intent = Intent(this, WeatherActivity::class.java)
             intent.putExtra("key", cityName)
             startActivity(intent)
         }
+
     }
 }
